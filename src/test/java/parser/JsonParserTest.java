@@ -1,59 +1,72 @@
 package parser;
 
+import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.Cart;
 import shop.RealItem;
 import shop.VirtualItem;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JsonParserTest {
     private static final String NAME_CART = "test-cart";
-    private static final String FILE_PATH = "D://";//Users//viktorbalabushko//IdeaProjects//UnitTesting-master//src//main//resources
-    private static final String FILE_NAME = NAME_CART.concat(".json");
-    private Cart cart = new Cart("test-cart");
+    private static final String FILE_PATH = "src/main/resources/";
+    private static final String FILE_NAME = FILE_PATH.concat(NAME_CART + ".json");
+    private Cart cart = new Cart(NAME_CART);
+    private Gson gson;
 
     @BeforeEach
     void initCart() {
-
-
-        RealItem real = new RealItem();
-        real.setName("bike");
-        real.setPrice(100);
-        real.setWeight(13.5);
-
-        RealItem real2 = new RealItem();
-        real2.setName("sword");
-        real2.setPrice(50);
-        real2.setWeight(5);
-
-        VirtualItem virt = new VirtualItem();
-        virt.setName("Avatar");
-        virt.setPrice(21);
-        virt.setSizeOnDisk(5000);
-
+        RealItem real = initRealItem("bike", 100, 13.5);
         cart.addRealItem(real);
-        cart.addRealItem(real2);
+        real = initRealItem("sword", 50, 5);
+        cart.addRealItem(real);
+
+        VirtualItem virt = initVirtualItem("Avatar", 21, 5000);
         cart.addVirtualItem(virt);
-        System.out.println("before");
+    }
+
+    private RealItem initRealItem(String name, double price, double weight) {
+        RealItem real = new RealItem();
+        real.setName(name);
+        real.setPrice(price);
+        real.setWeight(weight);
+        return real;
+    }
+
+    private VirtualItem initVirtualItem(String name, double price, double size) {
+        VirtualItem virt = new VirtualItem();
+        virt.setName(name);
+        virt.setPrice(price);
+        virt.setSizeOnDisk(size);
+        return virt;
     }
 
     @Test
     void writeToFileTest() {
-        File file = new File(FILE_PATH, FILE_NAME);
-        try {
-            file.createNewFile();
+        JsonParser parser = new JsonParser();
+        parser.writeToFile(cart);
+
+        gson = new Gson();
+        File file = new File(FILE_NAME);
+        Cart cartActual = null;
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            cartActual = gson.fromJson(reader.readLine(), Cart.class);
+            assertEquals("q", "q");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        JsonParser parser = new JsonParser();
-        parser.writeToFile(cart);
-        System.out.println("test");
-        assertEquals("q","q");
+
+        assertEquals(cart.getCartName(), cartActual.getCartName(),"CartName");
 
     }
+
+
 }
