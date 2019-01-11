@@ -7,16 +7,19 @@ import shop.RealItem;
 import shop.VirtualItem;
 
 import java.io.File;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JsonParserTest {
+    private static final String NAME_CART = "test-cart";
+    private static final String FILE_PATH = "D://";//Users//viktorbalabushko//IdeaProjects//UnitTesting-master//src//main//resources
+    private static final String FILE_NAME = NAME_CART.concat(".json");
     private Cart cart = new Cart("test-cart");
-    private static final String FILE_PATH = "C:\\Users\\viktorbalabushko\\IdeaProjects\\UnitTesting-master\\src\\main\\resources"
-    private String fileName ;
 
     @BeforeEach
     void initCart() {
-        fileName = new String(cart.getCartName()+".json");
-        File file = new File(FILE_PATH, fileName);
+
 
         RealItem real = new RealItem();
         real.setName("bike");
@@ -36,11 +39,21 @@ public class JsonParserTest {
         cart.addRealItem(real);
         cart.addRealItem(real2);
         cart.addVirtualItem(virt);
+        System.out.println("before");
     }
 
     @Test
     void writeToFileTest() {
+        File file = new File(FILE_PATH, FILE_NAME);
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         JsonParser parser = new JsonParser();
         parser.writeToFile(cart);
+        System.out.println("test");
+        assertEquals("q","q");
+
     }
 }
