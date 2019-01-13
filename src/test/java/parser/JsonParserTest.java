@@ -1,6 +1,8 @@
 package parser;
 
 import com.google.gson.Gson;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -27,9 +29,7 @@ public class JsonParserTest {
 
 	@BeforeEach
 	void initCart() {
-		RealItem real = initRealItem("bike", 100, 13.5);
-		cart.addRealItem(real);
-		real = initRealItem("sword", 50, 5);
+		RealItem real = initRealItem("sword", 50, 5);
 		cart.addRealItem(real);
 
 		VirtualItem virt = initVirtualItem("Avatar", 21, 5000);
@@ -85,6 +85,13 @@ public class JsonParserTest {
 		JsonParser parser = new JsonParser();
 		Cart cartActual = parser.readFromFile(new File(FILE_NAME));
 		assertEquals(cart.getCartName(), cartActual.getCartName());
+	}
+	
+	@AfterEach
+	void deleteCart() {
+		File file = new File(FILE_NAME);
+		file.delete();
+		cart = null;
 	}
 
 }
