@@ -53,7 +53,6 @@ public class JsonParserTest {
 		return virt;
 	}
 
-	@Disabled
 	@Test
 	void writeToFileTest() {
 		JsonParser parser = new JsonParser();
