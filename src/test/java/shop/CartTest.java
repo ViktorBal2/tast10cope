@@ -1,5 +1,6 @@
 package shop;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,7 +38,8 @@ public class CartTest {
 		virt.setSizeOnDisk(size);
 		return virt;
 	}
-	
+
+	@Tag("cart")
 	@Test
 	void deleteRealItemTest() {
 		double expectedTotal = cart.getTotalPrice() - delReal.getPrice();

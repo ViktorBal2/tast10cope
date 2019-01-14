@@ -5,9 +5,10 @@ import com.google.gson.Gson;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ValueSource;
 import shop.Cart;
 import shop.RealItem;
@@ -52,6 +53,7 @@ public class JsonParserTest {
 		return virt;
 	}
 
+	@Tags({@Tag("parser"), @Tag("positive")})
 	@Test
 	void writeToFileTest() {
 		JsonParser parser = new JsonParser();
@@ -72,6 +74,7 @@ public class JsonParserTest {
 		s.assertAll();
 	}
 
+	@Tags({@Tag("parser"), @Tag("positive")})
 	@Test
 	void readFromFileTest() {
 		gson = new Gson();
@@ -89,7 +92,7 @@ public class JsonParserTest {
 		s.assertAll();
 	}
 
-
+	@Tags({@Tag("parser"), @Tag("negative")})
 	@ParameterizedTest
 	@ValueSource(strings = { "NoFile", "NoFile.json", "src/main/resources/",
 			"src/main/resources/NoFile.json"})
@@ -98,7 +101,7 @@ public class JsonParserTest {
 		Exception exceptionActual = null;
 		try {
 			parser.readFromFile(new File(fileName));
-		} catch (NoSuchFileException ex) {
+		} catch (Exception ex) {
 			exceptionActual = ex;
 		}
 		SoftAssertions s = new SoftAssertions();
