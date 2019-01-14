@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Tag("parser")
 public class JsonParserTest {
 	private static final String NAME_CART = "test-cart";
 	private static final String FILE_PATH = "src/main/resources/";
@@ -54,7 +55,7 @@ public class JsonParserTest {
 		return virt;
 	}
 
-	@Tags({@Tag("parser"), @Tag("positive")})
+	@Tag("positive")
 	@Test
 	void writeToFileTest() {
 		JsonParser parser = new JsonParser();
@@ -75,7 +76,7 @@ public class JsonParserTest {
 				() -> assertEquals(cart.getTotalPrice(), actualTotalPrice));
 	}
 
-	@Tags({@Tag("parser"), @Tag("positive")})
+	@Tag("positive")
 	@Test
 	void readFromFileTest() {
 		gson = new Gson();
@@ -87,21 +88,22 @@ public class JsonParserTest {
 		
 		JsonParser parser = new JsonParser();
 		Cart cartActual = parser.readFromFile(new File(FILE_NAME));
-		String actualCartName = cartActual.getCartName();
-		double actualTotalPrice = cartActual.getTotalPrice();
-		assertAll(() -> assertEquals(cart.getCartName(), actualCartName),
-				() -> assertEquals(cart.getTotalPrice(), actualTotalPrice));
+
+		assertAll(() -> assertEquals(cart.getCartName(), cartActual.getCartName()),
+				() -> assertEquals(cart.getTotalPrice(), cartActual.getTotalPrice()));
 	}
 
-	@Tags({@Tag("parser"), @Tag("negative")})
+	@Tag("negative")
 	@ParameterizedTest
-	@ValueSource(strings = { "NoFile", "NoFile.json", "src\\main\\resources",
-			"src\\main\\resources\\NoFile.json", "src\\main\\resources\\andrew-cart.json"})
+	@ValueSource(strings = {
+			"NoFile",
+			"NoFile.json",
+			"src\\main\\resources",
+			"src\\main\\resources\\NoFile.json",
+			"src\\main\\resources\\.json"})
 	void readFromFileWithExeptionTest(String fileName){
 		JsonParser parser = new JsonParser();
-		Exception exceptionActual = null;
-
-		Exception exception = assertThrows(Exception.class,
+		Exception exception = assertThrows(NoSuchFileException.class,
 				() -> parser.readFromFile(new File(fileName)));
 		assertEquals("File "+ fileName +".json not found!", exception.getMessage());
 	}
