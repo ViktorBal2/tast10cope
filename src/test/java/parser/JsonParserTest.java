@@ -2,7 +2,6 @@ package parser;
 
 import com.google.gson.Gson;
 
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -18,7 +17,9 @@ import java.io.*;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JsonParserTest {
 	private static final String NAME_CART = "test-cart";
@@ -68,10 +69,10 @@ public class JsonParserTest {
 			e.printStackTrace();
 		}
 
-		SoftAssertions s = new SoftAssertions();
-		s.assertThat(cartActual.getCartName()).isEqualTo(cart.getCartName());
-		s.assertThat(cartActual.getTotalPrice()).isEqualTo(cart.getTotalPrice());
-		s.assertAll();
+		String actualCartName = cartActual.getCartName();
+		double actualTotalPrice = cartActual.getTotalPrice();
+		assertAll(() -> assertEquals(cart.getCartName(), actualCartName),
+				() -> assertEquals(cart.getTotalPrice(), actualTotalPrice));
 	}
 
 	@Tags({@Tag("parser"), @Tag("positive")})
@@ -86,29 +87,24 @@ public class JsonParserTest {
 		
 		JsonParser parser = new JsonParser();
 		Cart cartActual = parser.readFromFile(new File(FILE_NAME));
-		SoftAssertions s = new SoftAssertions();
-		s.assertThat(cartActual.getCartName()).isEqualTo(cart.getCartName());
-		s.assertThat(cartActual.getTotalPrice()).isEqualTo(cart.getTotalPrice());
-		s.assertAll();
+		String actualCartName = cartActual.getCartName();
+		double actualTotalPrice = cartActual.getTotalPrice();
+		assertAll(() -> assertEquals(cart.getCartName(), actualCartName),
+				() -> assertEquals(cart.getTotalPrice(), actualTotalPrice));
 	}
 
 	@Tags({@Tag("parser"), @Tag("negative")})
 	@ParameterizedTest
-	@ValueSource(strings = { "NoFile", "NoFile.json", "src/main/resources/",
-			"src/main/resources/NoFile.json"})
+	@ValueSource(strings = { "NoFile", "NoFile.json", "src\\main\\resources",
+			"src\\main\\resources\\NoFile.json", "src\\main\\resources\\andrew-cart.json"})
 	void readFromFileWithExeptionTest(String fileName){
 		JsonParser parser = new JsonParser();
 		Exception exceptionActual = null;
-		try {
-			parser.readFromFile(new File(fileName));
-		} catch (Exception ex) {
-			exceptionActual = ex;
-		}
-		SoftAssertions s = new SoftAssertions();
-		s.assertThat(new NoSuchFileException()).isEqualTo(exceptionActual);
+
+		Exception exception = assertThrows(Exception.class,
+				() -> parser.readFromFile(new File(fileName)));
+		assertEquals("File "+ fileName +".json not found!", exception.getMessage());
 	}
-
-
 
 	@AfterEach
 	void deleteCart() {
