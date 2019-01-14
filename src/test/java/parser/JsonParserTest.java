@@ -5,26 +5,24 @@ import com.google.gson.Gson;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ValueSource;
 import shop.Cart;
 import shop.RealItem;
 import shop.VirtualItem;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
+
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JsonParserTest {
 	private static final String NAME_CART = "test-cart";
 	private static final String FILE_PATH = "src/main/resources/";
-	private static final String FILE_NAME = FILE_PATH
-			.concat(NAME_CART + ".json");
+	private static final String FILE_NAME = FILE_PATH.concat(NAME_CART + ".json");
 	private Cart cart = new Cart(NAME_CART);
 	private Gson gson;
 
@@ -64,7 +62,6 @@ public class JsonParserTest {
 		Cart cartActual = null;
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			cartActual = gson.fromJson(reader.readLine(), Cart.class);
-			assertEquals("q", "q");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -86,9 +83,30 @@ public class JsonParserTest {
 		
 		JsonParser parser = new JsonParser();
 		Cart cartActual = parser.readFromFile(new File(FILE_NAME));
-		assertEquals(cart.getCartName(), cartActual.getCartName());
+		SoftAssertions s = new SoftAssertions();
+		s.assertThat(cartActual.getCartName()).isEqualTo(cart.getCartName());
+		s.assertThat(cartActual.getTotalPrice()).isEqualTo(cart.getTotalPrice());
+		s.assertAll();
 	}
-	
+
+
+	@ParameterizedTest
+	@ValueSource(strings = { "NoFile", "NoFile.json", "src/main/resources/",
+			"src/main/resources/NoFile.json"})
+	void readFromFileWithExeptionTest(String fileName){
+		JsonParser parser = new JsonParser();
+		Exception exceptionActual = null;
+		try {
+			parser.readFromFile(new File(fileName));
+		} catch (NoSuchFileException ex) {
+			exceptionActual = ex;
+		}
+		SoftAssertions s = new SoftAssertions();
+		s.assertThat(new NoSuchFileException()).isEqualTo(exceptionActual);
+	}
+
+
+
 	@AfterEach
 	void deleteCart() {
 		File file = new File(FILE_NAME);
