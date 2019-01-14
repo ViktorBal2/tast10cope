@@ -2,6 +2,7 @@ package parser;
 
 import com.google.gson.Gson;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -68,8 +69,10 @@ public class JsonParserTest {
 			e.printStackTrace();
 		}
 
-		assertEquals(cart.getCartName(), cartActual.getCartName());
-
+		SoftAssertions s = new SoftAssertions();
+		s.assertThat(cartActual.getCartName()).isEqualTo(cart.getCartName());
+		s.assertThat(cartActual.getTotalPrice()).isEqualTo(cart.getTotalPrice());
+		s.assertAll();
 	}
 
 	@Test
