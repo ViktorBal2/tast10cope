@@ -24,13 +24,11 @@ public class JsonParserTest {
 
     private Cart cartExpected;
 
-
     @BeforeEach
     void initCart() {
         cartExpected = new Cart(NAME_CART);
         FabricCart.initCart(cartExpected);
     }
-
 
     @Tag("positive")
     @Test
@@ -39,7 +37,7 @@ public class JsonParserTest {
         parser.writeToFile(cartExpected);
 
         Gson gson = new Gson();
-        Cart cartActual = new Cart("qwe");
+        Cart cartActual = null;
         try (BufferedReader reader = new BufferedReader(new FileReader(new File(FILE_NAME)))) {
             cartActual = gson.fromJson(reader.readLine(), Cart.class);
         } catch (IOException e) {
