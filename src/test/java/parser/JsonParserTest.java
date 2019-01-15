@@ -2,6 +2,7 @@ package parser;
 
 import com.google.gson.Gson;
 
+import fabric.FabricCart;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -9,32 +10,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import shop.Cart;
-import shop.RealItem;
-import shop.VirtualItem;
 
 import java.io.*;
 
-
+import static fabric.Constant.FILE_NAME;
+import static fabric.Constant.NAME_CART;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Tag("parser")
 public class JsonParserTest {
-    private static final String NAME_CART = "test-cartExpected";
-    private static final String FILE_PATH = "src/main/resources/";
-    private static final String FILE_NAME = FILE_PATH.concat(NAME_CART + ".json");
+
     private Cart cartExpected;
 
 
     @BeforeEach
     void initCart() {
         cartExpected = new Cart(NAME_CART);
-        RealItem real = initRealItem("sword", 50, 5);
-        cartExpected.addRealItem(real);
-
-        VirtualItem virt = initVirtualItem("Avatar", 21, 5000);
-        cartExpected.addVirtualItem(virt);
+        FabricCart.initCart(cartExpected);
     }
 
 
@@ -83,7 +77,6 @@ public class JsonParserTest {
             "src\\main\\resources",
             "src\\main\\resources\\test-cartExpected",
             "src\\main\\resources\\test-cartExpected.json"})
-        //src\main\resources\test-cartExpected.json
     void readFromFileWithExeptionTest(String fileName) {
         JsonParser parser = new JsonParser();
         Exception exception = assertThrows(NoSuchFileException.class,
@@ -95,22 +88,5 @@ public class JsonParserTest {
     void deleteCart() {
         File file = new File(FILE_NAME);
         file.delete();
-    }
-
-    private RealItem initRealItem(String name, double price, double weight) {
-        RealItem real = new RealItem();
-        real.setName(name);
-        real.setPrice(price);
-        real.setWeight(weight);
-        return real;
-    }
-
-    private VirtualItem initVirtualItem(String name, double price,
-                                        double size) {
-        VirtualItem virt = new VirtualItem();
-        virt.setName(name);
-        virt.setPrice(price);
-        virt.setSizeOnDisk(size);
-        return virt;
     }
 }
